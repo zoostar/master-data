@@ -13,6 +13,7 @@
 	</parent>
 	<modules>
 		<module>master-data-entity</module>
+		<module>master-data-module</module>
 	</modules>
 	<dependencies>
 		<dependency>
