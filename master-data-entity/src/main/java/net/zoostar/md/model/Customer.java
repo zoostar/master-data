@@ -2,20 +2,24 @@ package net.zoostar.md.model;
 
 import java.util.UUID;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 @Setter
 @ToString
+@Entity
 @NoArgsConstructor
 public class Customer implements Persistable<UUID> {
 
@@ -36,6 +40,10 @@ public class Customer implements Persistable<UUID> {
 	@Override
 	public boolean isNew() {
 		return this.id == null;
+	}
+	
+	public void setNew(boolean value) {
+		log.warn("Setting this value to {} is bogus as this method does nothing.", value);
 	}
 
 	@Override
