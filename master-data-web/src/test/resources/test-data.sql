@@ -1,0 +1,1 @@
+INSERT INTO Person(id, email, name) values(UUID(), "junit@junit.org", "J Unit");

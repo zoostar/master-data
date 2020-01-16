@@ -12,30 +12,7 @@
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<context:annotation-config />
-	<context:component-scan base-package="net.zoostar.md.service" />
-
-	<jpa:repositories base-package="net.zoostar.md.dao" />
-
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
-		p:entityManagerFactory-ref="entityManagerFactory"
-	/>
-
-	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-		p:dataSource-ref="dataSource">
-		<property name="persistenceUnitName" value="hsql" />
-		<property name="packagesToScan" value="net.zoostar.md.model" />
-	    <property name="jpaVendorAdapter">
-			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-<!-- 				<property name="generateDdl" value="true" /> -->
-			</bean>
-	    </property>
-	    <property name="jpaProperties">
-	    	<props>
-	    		<prop key="hibernate.hbm2ddl.auto">${spring.hbm2ddl.auto}</prop>
-	    	</props>
-	    </property>
-	</bean>
+	<context:load-time-weaver />
+	<context:component-scan base-package="net.zoostar.md.web.controller, net.zoostar.md.web.config" />
 	
-	<context:property-placeholder location="classpath:application.properties"/>
 </beans>
