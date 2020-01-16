@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.domain.Persistable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,6 +44,7 @@ public class Customer implements Persistable<UUID> {
 		return this.id == null;
 	}
 	
+	@JsonIgnore
 	public void setNew(boolean value) {
 		log.warn("Setting this value to {} is bogus as this method does nothing.", value);
 	}
