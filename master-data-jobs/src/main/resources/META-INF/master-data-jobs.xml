@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="jobTransactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"
+	/>
+      
+<!-- 	<jdbc:embedded-database id="jobDataSource" database-name="job-master-data" /> -->
+	
+	<bean id="fieldSetMapper" class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper"
+		p:targetType="net.zoostar.md.model.Customer"
+	/>
+	<bean id="lineTokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer"
+		p:names="email,name" p:delimiter=","
+	/>
+	<bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean"
+		p:transactionManager-ref="jobTransactionManager"
+	/>
+	<bean id="lineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper"
+		p:fieldSetMapper-ref="fieldSetMapper" p:lineTokenizer-ref="lineTokenizer"
+	/>
+	<bean id="itemSqlParameterSourceProvider" class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider"
+	/>
+	<bean id="jdbcBatchItemWriter" class="org.springframework.batch.item.database.JdbcBatchItemWriter"
+		p:dataSource-ref="dataSource"
+		p:sql="INSERT INTO Customer(id, email, name) VALUES (:id, :email, :name)"
+		p:itemSqlParameterSourceProvider-ref="itemSqlParameterSourceProvider"
+	/>
+<!-- 	<bean id="customerItemProcessor" class="net.zoostar.md.job.processor.ItemProcessorImpl" /> -->
+	<bean id="flatFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+		<property name="resource" value="classpath:data/customer-data.csv" />
+		<property name="lineMapper" ref="lineMapper" />
+	</bean>
+	<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"
+		p:jobRepository-ref="jobRepository"
+	/>
+	<bean id="itemProcessor" class="net.zoostar.md.job.processor.CustomerItemProcessor" />
+	<batch:job id="jobIngestCustomer">
+		<batch:step id="ingestion">
+			<batch:tasklet transaction-manager="jobTransactionManager">
+				<batch:chunk reader="flatFileItemReader" processor="itemProcessor" writer="jdbcBatchItemWriter" commit-interval="3" />
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+</beans>

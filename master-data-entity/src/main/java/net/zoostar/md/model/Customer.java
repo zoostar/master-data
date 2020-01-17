@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.domain.Persistable;
@@ -15,9 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Getter
 @Setter
 @ToString
@@ -34,19 +33,17 @@ public class Customer implements Persistable<UUID> {
 	@Id
 	@GeneratedValue(generator="uuid")
 	@GenericGenerator(name="uuid", strategy="uuid2")
+	@JsonIgnore
 	@Override
 	public UUID getId() {
 		return this.id;
 	}
 
+	@Transient
+	@JsonIgnore
 	@Override
 	public boolean isNew() {
 		return this.id == null;
-	}
-	
-	@JsonIgnore
-	public void setNew(boolean value) {
-		log.warn("Setting this value to {} is bogus as this method does nothing.", value);
 	}
 
 	@Override

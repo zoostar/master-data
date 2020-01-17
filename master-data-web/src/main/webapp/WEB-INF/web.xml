@@ -16,7 +16,8 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			classpath*:META-INF/applicationContext.xml
-			classpath:META-INF/applicationContext-web.xml
+			classpath*:META-INF/master-data-jobs.xml
+<!-- 			classpath:META-INF/applicationContext-web.xml -->
 			classpath:META-INF/datasource.xml
 		</param-value>
 	</context-param>
