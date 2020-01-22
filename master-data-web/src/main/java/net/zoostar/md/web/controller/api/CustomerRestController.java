@@ -1,5 +1,7 @@
 package net.zoostar.md.web.controller.api;
 
+import java.util.List;
+
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -18,10 +20,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import net.zoostar.md.exception.RecordNotFoundException;
 import net.zoostar.md.model.Customer;
 import net.zoostar.md.rule.impl.RequiredFieldException;
 import net.zoostar.md.service.CustomerService;
@@ -75,8 +79,31 @@ public class CustomerRestController {
 		try {
 			response = new ResponseEntity<>(customerManager.create(customer), HttpStatus.OK);
 		} catch(RequiredFieldException | DataIntegrityViolationException e) {
-			response = new ResponseEntity<>(customer, HttpStatus.INTERNAL_SERVER_ERROR);
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response;
+	}
+	
+	@GetMapping(path = "/retrieve/email")
+	public ResponseEntity<Customer> retrieveByEmail(@RequestParam(name = "email", required = true) String email) {
+		ResponseEntity<Customer> response = null;
+		Customer customer = null;
+		log.info("Retrieve by email: {}", email);
+		try {
+			customer = customerManager.retrieveByEmail(email);
+			response = new ResponseEntity<>(customer, HttpStatus.OK);
+		} catch(RecordNotFoundException e) {
+			log.warn(e.getMessage());
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
+	
+	@GetMapping(path = "/retrieve/name", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Customer>> retrieveByName(@RequestParam(name = "name", required = true) String name) {
+		log.info("Retrieve by last name: {}", name);
+		List<Customer> customers = customerManager.retrieveByName(name);
+		log.info("Found {} record(s) for name: {}", customers.size(), name);
+		return new ResponseEntity<>(customers, HttpStatus.OK);
 	}
 }
