@@ -22,12 +22,13 @@ public class CustomerItemProcessor implements ItemProcessor<Customer, Customer> 
 	
 	@Override
 	public Customer process(Customer customer) throws Exception {
-		
+		log.info("Processing item: {}", customer);
 		customerRequiredFieldRule.apply(customer);
 		
 		if(customer.isNew()) {
 			customer.setId(UUID.randomUUID());
 		}
+		log.info("{}", "Processing item complete.");
 		return customer;
 	}
 

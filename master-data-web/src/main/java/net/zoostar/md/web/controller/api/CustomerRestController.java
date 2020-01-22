@@ -10,6 +10,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +74,7 @@ public class CustomerRestController {
 		ResponseEntity<Customer> response;
 		try {
 			response = new ResponseEntity<>(customerManager.create(customer), HttpStatus.OK);
-		} catch(RequiredFieldException e) {
+		} catch(RequiredFieldException | DataIntegrityViolationException e) {
 			response = new ResponseEntity<>(customer, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response;
