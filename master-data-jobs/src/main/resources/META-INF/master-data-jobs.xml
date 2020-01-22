@@ -40,7 +40,7 @@
 	/>
 <!-- 	<bean id="customerItemProcessor" class="net.zoostar.md.job.processor.ItemProcessorImpl" /> -->
 	<bean id="flatFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
-		<property name="resource" value="classpath:data/customer-data.csv" />
+		<property name="resource" value="file:${catalina.home}/data/customer-data.csv" />
 		<property name="lineMapper" ref="lineMapper" />
 	</bean>
 	<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"
@@ -48,7 +48,7 @@
 	/>
 	<bean id="itemProcessor" class="net.zoostar.md.job.processor.CustomerItemProcessor" />
 	<batch:job id="jobIngestCustomer">
-		<batch:step id="ingestion">
+		<batch:step id="ingestion" allow-start-if-complete="true">
 			<batch:tasklet transaction-manager="jobTransactionManager">
 				<batch:chunk reader="flatFileItemReader" processor="itemProcessor" writer="jdbcBatchItemWriter" commit-interval="3" />
 			</batch:tasklet>

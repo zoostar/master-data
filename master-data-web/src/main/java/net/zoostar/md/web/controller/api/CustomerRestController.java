@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import net.zoostar.md.model.Customer;
+import net.zoostar.md.rule.impl.RequiredFieldException;
 import net.zoostar.md.service.CustomerService;
 
 @Slf4j
@@ -59,15 +60,22 @@ public class CustomerRestController {
 	JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		JobExecution jobExecution = jobLauncher.run(jobIngestCustomer, new JobParameters());
 		do {
-			log.info("Job execution in progress...");
+			log.info("{}", "Job execution in progress...");
 		} while(jobExecution.isRunning());
 		
+		log.info("{}", "Job execution complete.");
 		return new ResponseEntity<>(jobExecution.getStatus(), HttpStatus.OK);
 	}
 	
 	@PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Customer> create(@RequestBody Customer customer) {
 		log.info("create({})", customer);
-		return new ResponseEntity<>(customerManager.create(customer), HttpStatus.OK);
+		ResponseEntity<Customer> response;
+		try {
+			response = new ResponseEntity<>(customerManager.create(customer), HttpStatus.OK);
+		} catch(RequiredFieldException e) {
+			response = new ResponseEntity<>(customer, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
 	}
 }

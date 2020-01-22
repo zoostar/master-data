@@ -2,6 +2,7 @@ package net.zoostar.md.model;
 
 import java.util.UUID;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -37,6 +38,11 @@ public class Customer implements Persistable<UUID> {
 	@Override
 	public UUID getId() {
 		return this.id;
+	}
+	
+	@Column(name="email", length = 50, nullable = false, unique = true)
+	public String getEmail() {
+		return this.email;
 	}
 
 	@Transient

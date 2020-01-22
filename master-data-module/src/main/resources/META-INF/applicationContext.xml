@@ -13,7 +13,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<context:annotation-config />
-	<context:component-scan base-package="net.zoostar.md.service" />
+	<context:component-scan base-package="net.zoostar.md.service, net.zoostar.md.rule" />
 
 	<jpa:repositories base-package="net.zoostar.md.dao" />
 
