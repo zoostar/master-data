@@ -13,6 +13,7 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +80,10 @@ public class CustomerRestController {
 		try {
 			response = new ResponseEntity<>(customerManager.create(customer), HttpStatus.OK);
 		} catch(RequiredFieldException | DataIntegrityViolationException e) {
-			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.warn(e.getMessage(), e);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("error", e.getMessage());
+			response = new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response;
 	}
@@ -91,8 +95,10 @@ public class CustomerRestController {
 		try {
 			response = new ResponseEntity<>(customerManager.retrieveByEmail(email), HttpStatus.OK);
 		} catch(RecordNotFoundException e) {
-			log.warn(e.getMessage());
-			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.warn(e.getMessage(), e);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("error", e.getMessage());
+			response = new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response;
 	}
@@ -112,8 +118,10 @@ public class CustomerRestController {
 		try {
 			response = new ResponseEntity<>(customerManager.update(customer), HttpStatus.OK);
 		} catch(RecordNotFoundException | RequiredFieldException e) {
-			log.warn(e.getMessage());
-			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.warn(e.getMessage(), e);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("error", e.getMessage());
+			response = new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response;
 	}
@@ -126,7 +134,9 @@ public class CustomerRestController {
 			response = new ResponseEntity<>(customerManager.delete(email), HttpStatus.OK);
 		} catch(RecordNotFoundException e) {
 			log.warn(e.getMessage());
-			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("error", e.getMessage());
+			response = new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response;
 	}
