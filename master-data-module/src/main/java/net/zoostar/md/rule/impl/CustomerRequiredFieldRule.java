@@ -20,7 +20,7 @@ public class CustomerRequiredFieldRule implements BusinessRule<Customer, UUID> {
 	public void apply(Customer customer) throws BusinessRuleException {
 		if(StringUtils.isBlank(customer.getEmail())) {
 			log.warn("Required field customer.email is null/empty!");
-			throw new RequiredFieldException("Field customer.email cannot be null or empty!", customer);
+			throw new RequiredFieldException("Field [customer.email] cannot be null or empty!", customer);
 		}
 	}
 

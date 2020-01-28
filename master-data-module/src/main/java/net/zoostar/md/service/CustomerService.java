@@ -8,4 +8,6 @@ public interface CustomerService {
 	Customer create(Customer customer);
 	Customer retrieveByEmail(String email);
 	List<Customer> retrieveByName(String lname);
+	Customer update(Customer customer);
+	Customer delete(String email);
 }

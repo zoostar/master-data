@@ -36,8 +36,8 @@ public class CustomerServiceImpl implements CustomerService {
 	
 	@Override
 	public Customer create(Customer customer) {
-		log.info("create({})", customer);
-		customerRequiredFieldRule.apply(customer);
+		log.info("Creating a new customer: {}...", customer);
+		validate(customer);
 		return customerRepository.save(customer);
 	}
 
@@ -55,6 +55,27 @@ public class CustomerServiceImpl implements CustomerService {
 	public List<Customer> retrieveByName(String name) {
 		log.info("retrieveByName({})", name);
 		return customerRepository.findByName(name);
+	}
+
+	@Override
+	public Customer update(Customer customer) {
+		log.info("Updating customer: {}...", customer);
+		Customer entity = retrieveByEmail(customer.getEmail());
+		entity.setName(customer.getName());
+		validate(entity);
+		return customerRepository.save(entity);
+	}
+	
+	protected void validate(Customer customer) {
+		customerRequiredFieldRule.apply(customer);
+	}
+
+	@Override
+	public Customer delete(String email) {
+		log.info("Deleting customer by email id: {}...", email);
+		Customer entity = retrieveByEmail(email);
+		customerRepository.delete(entity);
+		return entity;
 	}
 
 }

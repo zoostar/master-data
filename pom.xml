@@ -15,6 +15,7 @@
 		<module>master-data-entity</module>
 		<module>master-data-module</module>
 		<module>master-data-web</module>
+		<module>master-data-jobs</module>
 	</modules>
 	<dependencies>
 		<dependency>

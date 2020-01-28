@@ -74,7 +74,7 @@ public class CustomerRestController {
 	
 	@PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Customer> create(@RequestBody Customer customer) {
-		log.info("create({})", customer);
+		log.info("create({})...", customer);
 		ResponseEntity<Customer> response;
 		try {
 			response = new ResponseEntity<>(customerManager.create(customer), HttpStatus.OK);
@@ -87,11 +87,9 @@ public class CustomerRestController {
 	@GetMapping(path = "/retrieve/email")
 	public ResponseEntity<Customer> retrieveByEmail(@RequestParam(name = "email", required = true) String email) {
 		ResponseEntity<Customer> response = null;
-		Customer customer = null;
 		log.info("Retrieve by email: {}", email);
 		try {
-			customer = customerManager.retrieveByEmail(email);
-			response = new ResponseEntity<>(customer, HttpStatus.OK);
+			response = new ResponseEntity<>(customerManager.retrieveByEmail(email), HttpStatus.OK);
 		} catch(RecordNotFoundException e) {
 			log.warn(e.getMessage());
 			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -105,5 +103,31 @@ public class CustomerRestController {
 		List<Customer> customers = customerManager.retrieveByName(name);
 		log.info("Found {} record(s) for name: {}", customers.size(), name);
 		return new ResponseEntity<>(customers, HttpStatus.OK);
+	}
+	
+	@PostMapping(path = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Customer> update(@RequestBody Customer customer) {
+		log.info("update({})...", customer);
+		ResponseEntity<Customer> response;
+		try {
+			response = new ResponseEntity<>(customerManager.update(customer), HttpStatus.OK);
+		} catch(RecordNotFoundException | RequiredFieldException e) {
+			log.warn(e.getMessage());
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
+	
+	@GetMapping(path = "/delete")
+	public ResponseEntity<Customer> delete(@RequestParam(name = "email", required = true) String email) {
+		log.info("delete({})...", email);
+		ResponseEntity<Customer> response = null;
+		try {
+			response = new ResponseEntity<>(customerManager.delete(email), HttpStatus.OK);
+		} catch(RecordNotFoundException e) {
+			log.warn(e.getMessage());
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
 	}
 }
