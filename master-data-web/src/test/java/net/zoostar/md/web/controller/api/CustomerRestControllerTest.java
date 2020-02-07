@@ -14,7 +14,7 @@ import net.zoostar.md.model.Customer;
 
 @Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:META-INF/applicationContext.xml",
+@ContextConfiguration(locations = {"classpath*:META-INF/applicationContext.xml", "classpath*:META-INF/master-data-jobs.xml",
 		"classpath:META-INF/applicationContext-test.xml", "classpath:META-INF/datasource.xml"})
 public class CustomerRestControllerTest {
 

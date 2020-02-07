@@ -29,9 +29,7 @@
 		<property name="persistenceUnitName" value="hsql" />
 		<property name="packagesToScan" value="net.zoostar.md.model" />
 	    <property name="jpaVendorAdapter">
-			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-<!-- 				<property name="generateDdl" value="true" /> -->
-			</bean>
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
 	    </property>
 	    <property name="jpaProperties">
 	    	<props>
@@ -40,5 +38,8 @@
 	    </property>
 	</bean>
 	
-	<context:property-placeholder location="classpath:application.properties"/>
+	<beans profile="dev">
+		<context:property-placeholder location="classpath*:application.properties, classpath*:dev/env.properties"/>
+	</beans>
+	
 </beans>

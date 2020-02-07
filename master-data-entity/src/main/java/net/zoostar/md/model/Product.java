@@ -1,5 +1,6 @@
 package net.zoostar.md.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -23,13 +24,14 @@ import lombok.ToString;
 @ToString
 @Entity
 @NoArgsConstructor
-public class Customer implements Persistable<UUID> {
-
+public class Product implements Persistable<UUID> {
 	
-	private String email;
+	private String assetId;
 	
-	private String name;
-
+	private String sku;
+	
+	private String desc;
+	
 	private UUID id;
 	
 	@Id
@@ -48,34 +50,29 @@ public class Customer implements Persistable<UUID> {
 		return this.id == null;
 	}
 	
-	@Column(name="email", length = 50, nullable = false, unique = true)
-	public String getEmail() {
-		return this.email;
+	@Column(name="assetId", length = 50, nullable = false, unique = true)
+	public String getAssetId() {
+		return this.assetId;
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		return result;
+		return Objects.hash(assetId);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		Customer other = (Customer) obj;
-		if (email == null) {
-			if (other.email != null)
-				return false;
-		} else if (!email.equals(other.email))
-			return false;
-		return true;
+		}
+		Product other = (Product) obj;
+		return Objects.equals(assetId, other.assetId);
 	}
 
 }

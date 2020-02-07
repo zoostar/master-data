@@ -40,7 +40,7 @@
 	/>
 <!-- 	<bean id="customerItemProcessor" class="net.zoostar.md.job.processor.ItemProcessorImpl" /> -->
 	<bean id="flatFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
-		<property name="resource" value="file:${catalina.home}/data/customer-data.csv" />
+		<property name="resource" value="file:/${input.data.file}" />
 		<property name="lineMapper" ref="lineMapper" />
 	</bean>
 	<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"
