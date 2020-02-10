@@ -1,8 +1,10 @@
 package net.zoostar.md.service.impl;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +20,7 @@ import net.zoostar.md.service.CustomerService;
 @ToString
 @Service
 @Transactional(readOnly = true)
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl extends AbstractGenericService<Customer, UUID> implements CustomerService {
 
 	protected CustomerRepository customerRepository;
 
@@ -34,6 +36,11 @@ public class CustomerServiceImpl implements CustomerService {
 	public void setCustomerRepository(CustomerRepository customerRepository) {
 		log.debug("setCustomerRepository({})", customerRepository);
 		this.customerRepository = customerRepository;
+	}
+	
+	@Override
+	protected CrudRepository<Customer, UUID> getGenericCrudRepository() {
+		return customerRepository;
 	}
 	
 	protected void validate(Customer customer) {

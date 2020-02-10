@@ -25,7 +25,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Customer implements Persistable<UUID> {
 
-	
 	private String email;
 	
 	private String name;

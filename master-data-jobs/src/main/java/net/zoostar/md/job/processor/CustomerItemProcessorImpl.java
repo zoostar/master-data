@@ -10,7 +10,7 @@ import net.zoostar.md.model.Customer;
 import net.zoostar.md.rule.impl.CustomerRequiredFieldRule;
 
 @Slf4j
-public class CustomerItemProcessor implements ItemProcessor<Customer, Customer> {
+public class CustomerItemProcessorImpl implements ItemProcessor<Customer, Customer> {
 
 	protected CustomerRequiredFieldRule customerRequiredFieldRule;
 	

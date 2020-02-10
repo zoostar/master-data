@@ -38,15 +38,14 @@
 		p:sql="INSERT INTO Customer(id, email, name) VALUES (:id, :email, :name)"
 		p:itemSqlParameterSourceProvider-ref="itemSqlParameterSourceProvider"
 	/>
-<!-- 	<bean id="customerItemProcessor" class="net.zoostar.md.job.processor.ItemProcessorImpl" /> -->
 	<bean id="flatFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
-		<property name="resource" value="file:/${input.data.file}" />
+		<property name="resource" value="${input.data.file}" />
 		<property name="lineMapper" ref="lineMapper" />
 	</bean>
 	<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"
 		p:jobRepository-ref="jobRepository"
 	/>
-	<bean id="itemProcessor" class="net.zoostar.md.job.processor.CustomerItemProcessor" />
+	<bean id="itemProcessor" class="net.zoostar.md.job.processor.CustomerItemProcessorImpl" />
 	<batch:job id="jobIngestCustomer">
 		<batch:step id="ingestion" allow-start-if-complete="true">
 			<batch:tasklet transaction-manager="jobTransactionManager">

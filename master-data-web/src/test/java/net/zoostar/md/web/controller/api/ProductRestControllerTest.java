@@ -1,8 +1,14 @@
 package net.zoostar.md.web.controller.api;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,4 +45,12 @@ public class ProductRestControllerTest {
 		log.info("Created new product: {}.", product);
 	}
 
+	@Test
+	@Ignore
+	public void testIngest() throws JobExecutionAlreadyRunningException, JobRestartException,
+	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+		ResponseEntity<JobExecution> jobStatus = productService.ingest();
+		Assert.assertNotNull(jobStatus);
+		Assert.assertEquals(jobStatus.getStatusCode(), HttpStatus.OK);
+	}
 }

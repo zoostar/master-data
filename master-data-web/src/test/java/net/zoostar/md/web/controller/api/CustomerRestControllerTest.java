@@ -3,11 +3,18 @@ package net.zoostar.md.web.controller.api;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 import net.zoostar.md.model.Customer;
@@ -24,8 +31,17 @@ public class CustomerRestControllerTest {
 	public void setCustomerService(CustomerRestController customerService) {
 		this.customerService = customerService;
 	}
+
+	@Test
+	public void testIngest() throws JobExecutionAlreadyRunningException, JobRestartException,
+	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+		ResponseEntity<JobExecution> response = customerService.ingest();
+		Assert.assertNotNull(response);
+		Assert.assertEquals(BatchStatus.COMPLETED, response.getBody().getStatus());
+	}
 	
 	@Test
+	@Transactional
 	public void testCreate() {
 		Assert.assertNotNull(customerService);
 		Customer customer = new Customer();

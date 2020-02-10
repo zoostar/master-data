@@ -1,13 +1,12 @@
 package net.zoostar.md.web.controller.api;
 
 import java.util.List;
+import java.util.UUID;
 
-import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
@@ -35,11 +34,9 @@ import net.zoostar.md.service.CustomerService;
 @RestController
 @ToString
 @RequestMapping("/api/customer")
-public class CustomerRestController {
+public class CustomerRestController extends AbstractGenericRestController<Customer, UUID> {
 
 	protected CustomerService customerManager;
-	
-	protected JobLauncher jobLauncher;
 	
 	protected Job jobIngestCustomer;
 	
@@ -50,27 +47,15 @@ public class CustomerRestController {
 	}
 	
 	@Autowired
-	public void setJobLauncher(JobLauncher jobLauncher) {
-		log.debug("setJobLauncher({})", jobLauncher);
-		this.jobLauncher = jobLauncher;
-	}
-	
-	@Autowired
 	public void setJobIngestCustomer(Job jobIngestCustomer) {
 		log.debug("setJobIngestCustomer({})", jobIngestCustomer);
 		this.jobIngestCustomer = jobIngestCustomer;
 	}
 	
 	@GetMapping(path = "/ingest")
-	public ResponseEntity<BatchStatus> triggerIngestionJob() throws JobExecutionAlreadyRunningException,
+	public ResponseEntity<JobExecution> ingest() throws JobExecutionAlreadyRunningException,
 	JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-		JobExecution jobExecution = jobLauncher.run(jobIngestCustomer, new JobParameters());
-		do {
-			log.info("{}", "Job execution in progress...");
-		} while(jobExecution.isRunning());
-		
-		log.info("{}", "Job execution complete.");
-		return new ResponseEntity<>(jobExecution.getStatus(), HttpStatus.OK);
+		return triggerIngestionJob(jobIngestCustomer, new JobParameters());
 	}
 	
 	@PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
