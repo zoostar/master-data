@@ -27,7 +27,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import net.zoostar.md.exception.RecordNotFoundException;
 import net.zoostar.md.model.Customer;
-import net.zoostar.md.rule.impl.RequiredFieldException;
+import net.zoostar.md.rule.exception.RequiredFieldException;
 import net.zoostar.md.service.CustomerService;
 
 @Slf4j

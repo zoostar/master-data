@@ -20,7 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import net.zoostar.md.rule.impl.RequiredFieldException;
+import net.zoostar.md.rule.exception.RequiredFieldException;
 import net.zoostar.md.service.GenericService;
 
 public abstract class AbstractGenericRestController<T extends Persistable<ID>, ID extends Serializable> {
