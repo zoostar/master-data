@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.springframework.data.domain.Persistable;
 
-import net.zoostar.md.rule.BusinessRuleException;
+import net.zoostar.md.rule.exception.BusinessRuleException;
 
 public class RequiredFieldException extends BusinessRuleException {
 

@@ -1,4 +1,4 @@
-package net.zoostar.md.rule;
+package net.zoostar.md.rule.exception;
 
 import java.io.Serializable;
 
