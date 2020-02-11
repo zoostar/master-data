@@ -9,14 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import net.zoostar.md.dao.CustomerRepository;
 import net.zoostar.md.exception.RecordNotFoundException;
 import net.zoostar.md.model.Customer;
 import net.zoostar.md.rule.impl.CustomerRequiredFieldRule;
 import net.zoostar.md.service.CustomerService;
 
-@Slf4j
 @ToString
 @Service
 @Transactional(readOnly = true)
@@ -83,10 +81,15 @@ public class CustomerServiceImpl extends AbstractGenericService<Customer, UUID> 
 
 	@Override
 	@Transactional(readOnly = false)
-	public Customer delete(String email) {
+	public Customer deleteByEmail(String email) {
 		log.info("Deleting customer by email id: {}...", email);
 		Customer entity = retrieveByEmail(email);
-		customerRepository.delete(entity);
+		delete(entity.getId());
 		return entity;
+	}
+
+	@Override
+	public void delete(UUID id) {
+		customerRepository.deleteById(id);
 	}
 }

@@ -11,7 +11,6 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,26 +23,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import net.zoostar.md.exception.RecordNotFoundException;
 import net.zoostar.md.model.Customer;
-import net.zoostar.md.rule.exception.RequiredFieldException;
 import net.zoostar.md.service.CustomerService;
+import net.zoostar.md.service.GenericService;
 
-@Slf4j
-@RestController
 @ToString
+@RestController
 @RequestMapping("/api/customer")
 public class CustomerRestController extends AbstractGenericRestController<Customer, UUID> {
 
-	protected CustomerService customerManager;
-	
 	protected Job jobIngestCustomer;
 	
+	private CustomerService genericManager;
+	
 	@Autowired
-	public void setCustomerManager(CustomerService customerManager) {
-		log.debug("setCustomerManager({})", customerManager);
-		this.customerManager = customerManager;
+	public void setGenericManager(CustomerService genericManager) {
+		this.genericManager = genericManager;
 	}
 	
 	@Autowired
@@ -58,19 +54,10 @@ public class CustomerRestController extends AbstractGenericRestController<Custom
 		return triggerIngestionJob(jobIngestCustomer, new JobParameters());
 	}
 	
+	@Override
 	@PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Customer> create(@RequestBody Customer customer) {
-		log.info("create({})...", customer);
-		ResponseEntity<Customer> response;
-		try {
-			response = new ResponseEntity<>(customerManager.create(customer), HttpStatus.OK);
-		} catch(RequiredFieldException | DataIntegrityViolationException e) {
-			log.warn(e.getMessage(), e);
-			HttpHeaders headers = new HttpHeaders();
-			headers.set("error", e.getMessage());
-			response = new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return response;
+		return super.create(customer);
 	}
 	
 	@GetMapping(path = "/retrieve/email")
@@ -78,7 +65,7 @@ public class CustomerRestController extends AbstractGenericRestController<Custom
 		ResponseEntity<Customer> response = null;
 		log.info("Retrieve by email: {}", email);
 		try {
-			response = new ResponseEntity<>(customerManager.retrieveByEmail(email), HttpStatus.OK);
+			response = new ResponseEntity<>(genericManager.retrieveByEmail(email), HttpStatus.OK);
 		} catch(RecordNotFoundException e) {
 			log.warn(e.getMessage(), e);
 			HttpHeaders headers = new HttpHeaders();
@@ -91,38 +78,27 @@ public class CustomerRestController extends AbstractGenericRestController<Custom
 	@GetMapping(path = "/retrieve/name", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Customer>> retrieveByName(@RequestParam(name = "name", required = true) String name) {
 		log.info("Retrieve by last name: {}", name);
-		List<Customer> customers = customerManager.retrieveByName(name);
+		List<Customer> customers = getCustomerManager().retrieveByName(name);
 		log.info("Found {} record(s) for name: {}", customers.size(), name);
 		return new ResponseEntity<>(customers, HttpStatus.OK);
 	}
 	
 	@PostMapping(path = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Customer> update(@RequestBody Customer customer) {
-		log.info("update({})...", customer);
-		ResponseEntity<Customer> response;
-		try {
-			response = new ResponseEntity<>(customerManager.update(customer), HttpStatus.OK);
-		} catch(RecordNotFoundException | RequiredFieldException e) {
-			log.warn(e.getMessage(), e);
-			HttpHeaders headers = new HttpHeaders();
-			headers.set("error", e.getMessage());
-			response = new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return response;
+		return super.update(customer);
 	}
 	
 	@GetMapping(path = "/delete")
 	public ResponseEntity<Customer> delete(@RequestParam(name = "email", required = true) String email) {
-		log.info("delete({})...", email);
-		ResponseEntity<Customer> response = null;
-		try {
-			response = new ResponseEntity<>(customerManager.delete(email), HttpStatus.OK);
-		} catch(RecordNotFoundException e) {
-			log.warn(e.getMessage());
-			HttpHeaders headers = new HttpHeaders();
-			headers.set("error", e.getMessage());
-			response = new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return response;
+		return new ResponseEntity<>(getCustomerManager().deleteByEmail(email), HttpStatus.OK);
+	}
+
+	@Override
+	public GenericService<Customer, UUID> getGenericManager() {
+		return getCustomerManager();
+	}
+	
+	public CustomerService getCustomerManager() {
+		return genericManager;
 	}
 }

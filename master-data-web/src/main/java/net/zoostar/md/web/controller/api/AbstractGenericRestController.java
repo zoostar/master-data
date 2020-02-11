@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import net.zoostar.md.exception.RecordNotFoundException;
 import net.zoostar.md.rule.exception.RequiredFieldException;
 import net.zoostar.md.service.GenericService;
 
@@ -27,15 +28,9 @@ public abstract class AbstractGenericRestController<T extends Persistable<ID>, I
 
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 	
-	protected GenericService<T, ID> genericManager;
-	
 	protected JobLauncher jobLauncher;
 	
-	@Autowired
-	public void setGenericManager(GenericService<T, ID> genericManager) {
-		log.debug("setGenericManager({})", genericManager);
-		this.genericManager = genericManager;
-	}
+	public abstract GenericService<T, ID> getGenericManager();
 	
 	@Autowired
 	public void setJobLauncher(JobLauncher jobLauncher) {
@@ -58,11 +53,11 @@ public abstract class AbstractGenericRestController<T extends Persistable<ID>, I
 		return new ResponseEntity<>(jobExecution, HttpStatus.OK);
 	}
 	
-	public ResponseEntity<T> create(T persistable) {
+	protected ResponseEntity<T> create(T persistable) {
 		log.info("create({})...", persistable);
 		ResponseEntity<T> response;
 		try {
-			response = new ResponseEntity<>(genericManager.create(persistable), HttpStatus.OK);
+			response = new ResponseEntity<>(getGenericManager().create(persistable), HttpStatus.OK);
 		} catch(RequiredFieldException | DataIntegrityViolationException e) {
 			log.warn(e.getMessage(), e);
 			HttpHeaders headers = new HttpHeaders();
@@ -70,6 +65,24 @@ public abstract class AbstractGenericRestController<T extends Persistable<ID>, I
 			response = new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response;
+	}
+	
+	public ResponseEntity<T> update(T persistable) {
+		log.info("update({})...", persistable);
+		ResponseEntity<T> response;
+		try {
+			response = new ResponseEntity<>(getGenericManager().update(persistable), HttpStatus.OK);
+		} catch(RecordNotFoundException | RequiredFieldException e) {
+			log.warn(e.getMessage(), e);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("error", e.getMessage());
+			response = new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
+	
+	public void delete(T persistable) {
+		getGenericManager().delete(persistable.getId());
 	}
 
 }
