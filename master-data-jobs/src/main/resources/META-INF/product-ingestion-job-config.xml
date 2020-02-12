@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- Begin Job Configuration -->
+	<batch:job id="jobIngestProduct">
+		<batch:step id="productIngestion" allow-start-if-complete="true">
+			<batch:tasklet transaction-manager="jobTransactionManager">
+				<batch:chunk reader="productFlatFileItemReader" processor="productItemProcessor" writer="productJdbcBatchItemWriter" commit-interval="3" />
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+	<!-- End Job Configuration -->
+
+
+
+	<!-- Begin Reader Config -->
+	<bean id="productFlatFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+		<property name="resource" value="${product.input.data.file}" />
+		<property name="lineMapper" ref="productLineMapper" />
+	</bean>
+	<bean id="productLineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper"
+		p:fieldSetMapper-ref="productFieldSetMapper" p:lineTokenizer-ref="productLineTokenizer"
+	/>
+	<bean id="productFieldSetMapper" class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper"
+		p:targetType="net.zoostar.md.model.Product"
+	/>
+	<bean id="productLineTokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer"
+		p:names="assetId,sku,desc" p:delimiter=","
+	/>
+	<!-- End Reader Config -->
+	
+	
+
+	<!-- Begin Processor Config -->
+	<bean id="productItemProcessor" class="net.zoostar.md.job.processor.ProductItemProcessorImpl" />
+	<!-- End Processor Config -->
+
+
+
+	<!-- Begin Writer Config -->
+	<bean id="productJdbcBatchItemWriter" class="org.springframework.batch.item.database.JdbcBatchItemWriter"
+		p:dataSource-ref="dataSource"
+		p:sql="INSERT INTO Product(id, assetId, sku, desc) VALUES (:id, :assetId, :sku, :desc)"
+		p:itemSqlParameterSourceProvider-ref="itemSqlParameterSourceProvider"
+	/>
+	<!-- End Writer Config -->
+</beans>
