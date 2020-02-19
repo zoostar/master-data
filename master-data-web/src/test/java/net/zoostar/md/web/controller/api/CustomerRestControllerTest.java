@@ -9,6 +9,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,14 @@ public class CustomerRestControllerTest extends AbstractBaseRestControllerTest {
 		Assert.assertTrue(response.getBody().equals(customer));
 		Assert.assertEquals(response.getBody().hashCode(), customer.hashCode());
 		log.info("Created new customer: {}.", customer);
+	}
+	
+	@Test
+	public void testRetrieveAll() {
+		ResponseEntity<Page<Customer>> response = customerService.retrieveAll(0, 2);
+		Assert.assertEquals(response.getStatusCode(), HttpStatus.OK);
+		Page<Customer> customers = response.getBody();
+		Assert.assertTrue(2 == customers.getSize());
 	}
 
 }

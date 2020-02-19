@@ -11,6 +11,9 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -58,6 +61,13 @@ public class CustomerRestController extends AbstractGenericRestController<Custom
 	@PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Customer> create(@RequestBody Customer customer) {
 		return super.create(customer);
+	}
+
+	@GetMapping(path = "/retrieve/all")
+	public ResponseEntity<Page<Customer>> retrieveAll(@RequestParam(name = "page", required = true) int page, @RequestParam(name = "size", required = true) int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		log.info("pageable: {}", pageable);
+		return new ResponseEntity<>(genericManager.retrieveAll(pageable), HttpStatus.OK);
 	}
 	
 	@GetMapping(path = "/retrieve/email")
