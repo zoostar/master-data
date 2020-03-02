@@ -6,7 +6,7 @@ import org.springframework.data.domain.Persistable;
 
 public interface GenericService<T extends Persistable<ID>, ID extends Serializable> {
 	T create(T persistable);
-	T update(T customer);
+	T update(T persistable);
 	void delete(ID id);
 
 }

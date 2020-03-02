@@ -8,7 +8,6 @@ import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import net.zoostar.md.model.Customer;
 
 public class CustomerRestControllerTest extends AbstractBaseRestControllerTest {
-
-	protected CustomerRestController customerService;
-	
-	@Autowired
-	public void setCustomerService(CustomerRestController customerService) {
-		this.customerService = customerService;
-	}
 
 	@Test
 	public void testIngest() throws JobExecutionAlreadyRunningException, JobRestartException,

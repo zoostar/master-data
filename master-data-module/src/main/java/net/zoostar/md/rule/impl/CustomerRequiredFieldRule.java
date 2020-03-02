@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import net.zoostar.md.model.Customer;
 import net.zoostar.md.rule.BusinessRule;
@@ -14,7 +13,6 @@ import net.zoostar.md.rule.exception.RequiredFieldException;
 
 @Slf4j
 @Component
-@ToString
 public class CustomerRequiredFieldRule implements BusinessRule<Customer, UUID> {
 
 	@Override

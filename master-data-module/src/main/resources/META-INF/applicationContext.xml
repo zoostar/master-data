@@ -15,9 +15,10 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<context:annotation-config />
-	<context:component-scan base-package="net.zoostar.md.service, net.zoostar.md.rule" />
+	<context:component-scan base-package="net.zoostar.md.service, net.zoostar.md.rule,
+			net.zoostar.workflow.service" />
 
-	<jpa:repositories base-package="net.zoostar.md.dao" />
+	<jpa:repositories base-package="net.zoostar.md.dao, net.zoostar.workflow.dao" />
 
 	<tx:annotation-driven/>
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
